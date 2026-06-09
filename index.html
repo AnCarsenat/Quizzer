@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        h1 { text-align: center; margin-bottom: 30px; color: #333; }
+        .card, .question {
+            background: white;
+            padding: 22px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-primary { background: #28a745; color: white; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-toggle { background: #17a2b8; color: white; padding: 10px 18px; }
+
+        input[type="text"], input[type="number"], select {
+            padding: 12px;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        .feedback {
+            margin-top: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+        .correct { background: #d4edda; color: #155724; }
+        .incorrect { background: #f8d7da; color: #721c24; }
+        .spoiler {
+            background: #fff3cd;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-block;
+        }
+        #error, #toast { 
+            padding: 12px; 
+            border-radius: 8px; 
+            margin: 10px 0; 
+        }
+        #toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #333;
+            color: white;
+            display: none;
+            z-index: 1000;
+        }
+        .setting-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <h1>Interactive Quiz</h1>
+
+    <div style="margin-bottom: 15px;">
+        <button class="btn-toggle" onclick="toggleSettings()">⚙️ Settings</button>
+        <button onclick="document.getElementById('fileInput').click()">📁 Load Custom Quiz</button>
+        <input type="file" id="fileInput" accept=".json" style="display:none" onchange="loadCustomQuiz(event)">
+    </div>
+
+    <div id="settings-panel" class="card" style="display: none;">
+        <h3>Quiz Settings</h3>
+        <div class="setting-row">
+            <span class="setting-name">Show correct answers</span>
+            <select id="answerDisplay" onchange="liveUpdateSettings()">
+                <option value="inline">Under each question</option>
+                <option value="end">Only at the end</option>
+            </select>
+        </div>
+        <div class="setting-row">
+            <span class="setting-name">Use spoiler for answers</span>
+            <input type="checkbox" id="useSpoiler" onchange="liveUpdateSettings()">
+        </div>
+        <div class="setting-row">
+            <span class="setting-name">Randomize questions</span>
+            <input type="checkbox" id="randomize" onchange="liveUpdateSettings()">
+        </div>
+        <div class="setting-row">
+            <span class="setting-name">Dark mode</span>
+            <input type="checkbox" id="darkMode" onchange="liveUpdateSettings()">
+        </div>
+        <button onclick="saveSettings()" class="btn-secondary" style="margin-top: 15px;">Save Settings</button>
+    </div>
+
+    <div id="error"></div>
+    <div id="toast"></div>
+    <div id="quiz-container"></div>
+    
+    <div style="text-align:center; margin: 25px 0;">
+        <button onclick="submitQuiz()" class="btn-primary" id="submit-btn">Submit All Answers</button>
+        <button onclick="resubmitQuiz()" class="btn-secondary" id="retry-btn" style="display:none;">Resubmit / Show Feedback Again</button>
+    </div>
+
+    <div id="results" style="display: none;"></div>
+
+    <script>
+        let questions = [];
+        let userAnswers = {};
+        let currentQuizKey = 'default';
+        let settings = { answerDisplay: "inline", useSpoiler: true, randomize: false, darkMode: false };
+
+        function showToast(message, type = "success") {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.background = type === "success" ? "#28a745" : "#dc3545";
+            toast.style.display = "block";
+            setTimeout(() => toast.style.display = "none", 2500);
+        }
+
+        function toggleSettings() {
+            const panel = document.getElementById('settings-panel');
+            panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function loadSettings() {
+            const saved = localStorage.getItem('quizSettings');
+            if (saved) settings = JSON.parse(saved);
+            document.getElementById('answerDisplay').value = settings.answerDisplay;
+            document.getElementById('useSpoiler').checked = settings.useSpoiler;
+            document.getElementById('randomize').checked = settings.randomize;
+            document.getElementById('darkMode').checked = settings.darkMode;
+        }
+
+        function liveUpdateSettings() {
+            settings.answerDisplay = document.getElementById('answerDisplay').value;
+            settings.useSpoiler = document.getElementById('useSpoiler').checked;
+            settings.randomize = document.getElementById('randomize').checked;
+            settings.darkMode = document.getElementById('darkMode').checked;
+        }
+
+        function saveSettings() {
+            liveUpdateSettings();
+            localStorage.setItem('quizSettings', JSON.stringify(settings));
+            showToast("Settings saved successfully");
+        }
+
+        function getQuizFile(quizName) {
+            currentQuizKey = `quizProgress_${quizName}`;
+            // Try both locations
+            return [`./${quizName}.json`, `./quizs/${quizName}.json`];
+        }
+
+        async function tryLoadQuiz(urls) {
+            for (let url of urls) {
+                try {
+                    const res = await fetch(url);
+                    if (res.ok) return await res.json();
+                } catch(e) {}
+            }
+            return null;
+        }
+
+        async function loadQuestions(quizName = null) {
+            const params = new URLSearchParams(window.location.search);
+            const quiz = quizName || params.get('quiz') || 'default';
+
+            const urls = getQuizFile(quiz);
+            questions = await tryLoadQuiz(urls);
+
+            if (!questions) {
+                document.getElementById('error').innerHTML = `Could not load quiz <strong>${quiz}</strong>`;
+                return;
+            }
+
+            if (settings.randomize) questions = questions.sort(() => Math.random() - 0.5);
+            loadProgress();
+            renderQuiz();
+        }
+
+        function loadCustomQuiz(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                try {
+                    questions = JSON.parse(ev.target.result);
+                    currentQuizKey = 'custom_quiz';
+                    loadProgress();
+                    renderQuiz();
+                    showToast("Custom quiz loaded successfully");
+                } catch(err) {
+                    showToast("Invalid JSON file", "error");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function loadProgress() {
+            const saved = localStorage.getItem(currentQuizKey);
+            if (saved) userAnswers = JSON.parse(saved);
+        }
+
+        function saveProgress() {
+            localStorage.setItem(currentQuizKey, JSON.stringify(userAnswers));
+        }
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+
+            questions.forEach((q, index) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = 'question';
+                qDiv.id = `q-${index}`;
+                qDiv.innerHTML = `<h3>Question ${index + 1}: ${q.question}</h3>`;
+
+                // ... (same input rendering as before with pre-filled values)
+                if (q.type === 'multiple-choice') {
+                    q.options.forEach(opt => {
+                        const checked = userAnswers[index] === opt ? 'checked' : '';
+                        qDiv.innerHTML += `<label><input type="radio" name="q${index}" value="${opt}" ${checked} onchange="saveAnswer(${index}, this.value)"> ${opt}</label><br>`;
+                    });
+                } else if (q.type === 'checkbox') {
+                    q.options.forEach(opt => {
+                        const checked = (userAnswers[index] || []).includes(opt) ? 'checked' : '';
+                        qDiv.innerHTML += `<label><input type="checkbox" name="q${index}" value="${opt}" ${checked} onchange="saveCheckboxAnswer(${index})"> ${opt}</label><br>`;
+                    });
+                } else if (q.type === 'text' || q.type === 'number') {
+                    const type = q.type === 'number' ? 'number' : 'text';
+                    const value = userAnswers[index] || '';
+                    qDiv.innerHTML += `<input type="${type}" id="input-${index}" value="${value}" placeholder="Your answer" onblur="saveAnswer(${index}, this.value)">`;
+                } else if (q.type === 'select') {
+                    let html = `<select id="select-${index}" onchange="saveAnswer(${index}, this.value)"><option value="">Select...</option>`;
+                    q.options.forEach(opt => {
+                        const selected = userAnswers[index] === opt ? 'selected' : '';
+                        html += `<option value="${opt}" ${selected}>${opt}</option>`;
+                    });
+                    html += '</select>';
+                    qDiv.innerHTML += html;
+                }
+
+                const feedbackDiv = document.createElement('div');
+                feedbackDiv.id = `feedback-${index}`;
+                qDiv.appendChild(feedbackDiv);
+                container.appendChild(qDiv);
+            });
+        }
+
+        function saveAnswer(index, value) {
+            userAnswers[index] = value;
+            saveProgress();
+        }
+
+        function saveCheckboxAnswer(index) {
+            userAnswers[index] = Array.from(document.querySelectorAll(`input[name="q${index}"]:checked`)).map(cb => cb.value);
+            saveProgress();
+        }
+
+        function getCorrectDisplay(q) {
+            if (Array.isArray(q.correctAnswer)) return q.correctAnswer.join(', ');
+            if (q.acceptableAnswers?.length) return q.acceptableAnswers.join(' / ');
+            return q.correctAnswer !== undefined ? q.correctAnswer : '—';
+        }
+
+        function submitQuiz() {
+            document.getElementById('submit-btn').style.display = 'none';
+            document.getElementById('retry-btn').style.display = 'inline-block';
+            showFeedback();
+        }
+
+        function resubmitQuiz() {
+            showFeedback();
+        }
+
+        function showFeedback() {
+            let score = 0;
+
+            questions.forEach((q, i) => {
+                const userAns = userAnswers[i];
+                let isCorrect = false;
+
+                if (q.type === 'text') {
+                    const userText = String(userAns || '').trim().toLowerCase();
+                    isCorrect = q.acceptableAnswers?.some(a => String(a).trim().toLowerCase() === userText) || false;
+                } else if (q.type === 'number') {
+                    isCorrect = parseFloat(userAns) === parseFloat(q.correctAnswer);
+                } else if (q.type === 'checkbox') {
+                    isCorrect = JSON.stringify((userAns || []).sort()) === JSON.stringify((q.correctAnswer || []).sort());
+                } else {
+                    isCorrect = String(userAns) === String(q.correctAnswer);
+                }
+
+                if (isCorrect) score++;
+
+                const feedbackDiv = document.getElementById(`feedback-${i}`);
+                let feedbackHTML = `<div class="feedback ${isCorrect ? 'correct' : 'incorrect'}">
+                    <strong>${isCorrect ? '✅ Correct!' : '❌ Incorrect'}</strong><br>`;
+
+                if (!isCorrect && settings.answerDisplay === "inline") {
+                    const correctText = getCorrectDisplay(q);
+                    if (settings.useSpoiler) {
+                        feedbackHTML += `Correct answer: <span class="spoiler" onclick="this.style.background='white'; this.innerHTML='${correctText}'">Click to reveal</span>`;
+                    } else {
+                        feedbackHTML += `Correct answer: <strong>${correctText}</strong>`;
+                    }
+                }
+                feedbackHTML += `</div>`;
+
+                if (settings.answerDisplay === "inline") {
+                    feedbackDiv.innerHTML = feedbackHTML;
+                }
+            });
+
+            document.getElementById('results').innerHTML = `<h2>Your Score: ${score} / ${questions.length}</h2>`;
+            document.getElementById('results').style.display = 'block';
+        }
+
+        function resetQuiz() {
+            if (confirm("Clear all answers and progress?")) {
+                localStorage.removeItem(currentQuizKey);
+                userAnswers = {};
+                renderQuiz();
+            }
+        }
+
+        window.onload = () => {
+            loadSettings();
+            loadQuestions();
+        };
+    </script>
+</body>
+</html>

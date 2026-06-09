@@ -1,0 +1,107 @@
+[
+  {
+    "question": "Quel mouvement littéraire est principalement associé à la glorification de la raison, de l'ordre et de la règle classique au XVIIe siècle ?",
+    "type": "select",
+    "options": ["Humanisme", "Classicism", "Romantisme", "Lumières"],
+    "correctAnswer": "Classicism"
+  },
+  {
+    "question": "Qui est considéré comme le théoricien principal du Classicisme avec son Art poétique ?",
+    "type": "text",
+    "acceptableAnswers": ["Boileau", "Nicolas Boileau"]
+  },
+  {
+    "question": "Quels sont les trois grands principes du Classicisme ? (cochez les bonnes réponses)",
+    "type": "checkbox",
+    "options": ["La raison", "L'imitation des Anciens", "L'excès et la passion", "La vraisemblance", "Le respect des règles (bienséances, unités)"],
+    "correctAnswer": ["La raison", "L'imitation des Anciens", "La vraisemblance", "Le respect des règles (bienséances, unités)"]
+  },
+  {
+    "question": "Quel mouvement du XIXe siècle met en avant l'émotion, le moi, la nature et le sentiment religieux ?",
+    "type": "select",
+    "options": ["Réalisme", "Romantisme", "Naturalisme", "Symbolisme"],
+    "correctAnswer": "Romantisme"
+  },
+  {
+    "question": "Parmi ces auteurs, lesquels sont considérés comme des figures majeures du Romantisme français ?",
+    "type": "checkbox",
+    "options": ["Victor Hugo", "Alfred de Musset", "Gustave Flaubert", "Lamartine", "Chateaubriand"],
+    "correctAnswer": ["Victor Hugo", "Alfred de Musset", "Lamartine", "Chateaubriand"]
+  },
+  {
+    "question": "Quel est le nom du recueil de Victor Hugo qui marque la victoire du Romantisme au théâtre ?",
+    "type": "text",
+    "acceptableAnswers": ["Hernani"]
+  },
+  {
+    "question": "Quel mouvement littéraire cherche à représenter la réalité avec objectivité, sans idéalisation ?",
+    "type": "select",
+    "options": ["Romantisme", "Réalisme", "Symbolisme", "Surréalisme"],
+    "correctAnswer": "Réalisme"
+  },
+  {
+    "question": "Qui est l'auteur phare du Réalisme avec Madame Bovary ?",
+    "type": "text",
+    "acceptableAnswers": ["Gustave Flaubert", "Flaubert"]
+  },
+  {
+    "question": "Le Naturalisme est une radicalisation du Réalisme. Qui en est le principal théoricien ?",
+    "type": "text",
+    "acceptableAnswers": ["Émile Zola", "Zola"]
+  },
+  {
+    "question": "Quelle œuvre de Zola est considérée comme le manifeste du Naturalisme ?",
+    "type": "text",
+    "acceptableAnswers": ["Le Roman expérimental"]
+  },
+  {
+    "question": "Quel mouvement poétique de la fin du XIXe siècle privilégie la suggestion, les correspondances et le mystère ?",
+    "type": "select",
+    "options": ["Parnasse", "Symbolisme", "Surréalisme", "Existentialisme"],
+    "correctAnswer": "Symbolisme"
+  },
+  {
+    "question": "Citez trois grands poètes symbolistes.",
+    "type": "text",
+    "acceptableAnswers": ["Baudelaire", "Verlaine", "Mallarmé", "Rimbaud"]
+  },
+  {
+    "question": "Quel mouvement du XXe siècle valorise l'inconscient, le rêve et l'écriture automatique ?",
+    "type": "select",
+    "options": ["Dadaïsme", "Surréalisme", "Absurde", "Nouveau Roman"],
+    "correctAnswer": "Surréalisme"
+  },
+  {
+    "question": "Qui est le principal fondateur du Surréalisme ?",
+    "type": "text",
+    "acceptableAnswers": ["André Breton", "Breton"]
+  },
+  {
+    "question": "Le théâtre de l'Absurde est représenté notamment par :",
+    "type": "checkbox",
+    "options": ["Samuel Beckett", "Eugène Ionesco", "Jean-Paul Sartre", "Albert Camus"],
+    "correctAnswer": ["Samuel Beckett", "Eugène Ionesco"]
+  },
+  {
+    "question": "Quel mouvement philosophico-littéraire du XXe siècle insiste sur l'absurdité de l'existence et la liberté individuelle ?",
+    "type": "select",
+    "options": ["Existentialisme", "Structuralisme", "Postmodernisme", "Surréalisme"],
+    "correctAnswer": "Existentialisme"
+  },
+  {
+    "question": "Associez ces auteurs à leur mouvement principal :",
+    "type": "text",
+    "acceptableAnswers": ["Sartre et Camus → Existentialisme", "Hugo → Romantisme", "Zola → Naturalisme", "Mallarmé → Symbolisme"]
+  },
+  {
+    "question": "Quel est le siècle d'or du Classicisme en France ?",
+    "type": "number",
+    "correctAnswer": 17
+  },
+  {
+    "question": "Le mouvement des Lumières est surtout un mouvement du :",
+    "type": "select",
+    "options": ["XVIe siècle", "XVIIe siècle", "XVIIIe siècle", "XIXe siècle"],
+    "correctAnswer": "XVIIIe siècle"
+  }
+]

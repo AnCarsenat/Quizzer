@@ -1,0 +1,29 @@
+[
+  {
+    "question": "What is 2 + 2?",
+    "type": "number",
+    "correctAnswer": 4
+  },
+  {
+    "question": "What is 5 * 3?",
+    "type": "text",
+    "acceptableAnswers": ["15", "fifteen"]
+  },
+  {
+    "question": "Solve: 10 - 7 = ?",
+    "type": "number",
+    "correctAnswer": 3
+  },
+  {
+    "question": "What is the square root of 16?",
+    "type": "multiple-choice",
+    "options": ["2", "3", "4", "5"],
+    "correctAnswer": "4"
+  },
+  {
+    "question": "Choose the correct article: ___ apple is red.",
+    "type": "select",
+    "options": ["A", "An", "The", "Some"],
+    "correctAnswer": "An"
+  }
+]
