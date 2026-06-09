@@ -3,111 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bac Français 2026 - Quiz</title>
+    <title>Quizzer</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            max-width: 900px;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            max-width: 960px;
             margin: 0 auto;
             padding: 20px;
             background: #f8f9fa;
+            color: #333;
         }
-        h1 { text-align: center; margin-bottom: 8px; color: #333; }
-        .subtitle { text-align: center; color: #666; margin-bottom: 25px; }
+        h1 { 
+            text-align: center; 
+            margin: 10px 0 8px; 
+            color: #222; 
+        }
+        .subtitle { 
+            text-align: center; 
+            color: #666; 
+            margin-bottom: 30px; 
+        }
 
         .header-controls {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 12px;
+            margin-bottom: 25px;
             flex-wrap: wrap;
             align-items: center;
         }
         #searchInput {
-            padding: 12px;
+            padding: 14px 16px;
             border: 1px solid #ddd;
-            border-radius: 8px;
+            border-radius: 10px;
             flex: 1;
-            min-width: 280px;
+            min-width: 260px;
+            font-size: 16px;
         }
         select, button {
-            padding: 12px;
+            padding: 13px 16px;
             border: 1px solid #ddd;
-            border-radius: 8px;
+            border-radius: 10px;
+            font-size: 16px;
+            background: white;
         }
+        button {
+            cursor: pointer;
+        }
+
         .quiz-card {
-            padding: 18px;
+            padding: 20px;
             background: white;
             border-radius: 12px;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
             cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            transition: all 0.25s;
         }
         .quiz-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.12);
         }
-        .quiz-desc { color: #555; font-size: 0.95em; margin-top: 6px; }
+        .quiz-desc { 
+            color: #555; 
+            margin-top: 8px; 
+            font-size: 0.96em; 
+        }
 
-        .footer {
-            margin-top: 60px;
-            padding: 25px;
-            text-align: center;
-            color: #666;
-            border-top: 1px solid #ddd;
-        }
-        .social-icons a {
-            font-size: 30px;
-            margin: 0 15px;
-            color: #555;
-            text-decoration: none;
-        }
-        .toast {
-            position: fixed;
-            bottom: 25px;
-            right: 25px;
-            padding: 14px 22px;
-            border-radius: 8px;
-            color: white;
-            display: none;
-            z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
+        /* Improved Form Elements */
         .question {
             background: white;
-            padding: 22px;
-            margin-bottom: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 26px;
+            margin-bottom: 22px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.07);
         }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1.5px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border 0.2s;
+        }
+        input[type="text"]:focus, input[type="number"]:focus {
+            border-color: #4a90e2;
+            outline: none;
+        }
+        select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1.5px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            background: white;
+        }
+        label {
+            display: block;
+            margin: 10px 0;
+            cursor: pointer;
+            font-size: 15.5px;
+        }
+        input[type="radio"], input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
         .feedback {
-            margin-top: 12px;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 15px;
+            margin-top: 16px;
+            padding: 16px;
+            border-radius: 10px;
+            font-size: 15.5px;
         }
-        .correct { background: #d4edda; color: #155724; }
-        .incorrect { background: #f8d7da; color: #721c24; }
+        .correct { background: #e6f4ea; color: #137333; }
+        .incorrect { background: #fce8e6; color: #c5221f; }
+
         .spoiler {
-            background: #fff3cd;
-            padding: 8px 12px;
+            background: #fef3c7;
+            padding: 8px 14px;
             border-radius: 6px;
             cursor: pointer;
             display: inline-block;
         }
+
+        .footer {
+            margin-top: 80px;
+            padding: 30px;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #eee;
+        }
+        .social-icons a {
+            margin: 0 16px;
+            text-decoration: none;
+        }
+        .social-icons img {
+            width: 38px;
+            height: 38px;
+            vertical-align: middle;
+        }
     </style>
 </head>
 <body>
-    <h1>Bac Français 2026</h1>
-    <p class="subtitle">Quiz interactifs pour préparer le bac</p>
+    <h1>Quizzer</h1>
+    <p class="subtitle">Interactive quizzes</p>
 
     <div class="header-controls">
-        <input type="text" id="searchInput" placeholder="🔍 Rechercher un quiz..." onkeyup="filterQuizzes()">
+        <button onclick="toggleSettings()">⚙️ Settings</button>
+        <input type="text" id="searchInput" placeholder="🔍 Search ..." onkeyup="filterQuizzes()">
         <select id="quizSelector" onchange="loadSelectedQuiz(this.value)">
-            <option value="">— Choisir un quiz —</option>
+            <option value="">Select a quiz</option>
         </select>
-        <button onclick="document.getElementById('fileInput').click()">📁 Charger un fichier JSON</button>
+        <button onclick="document.getElementById('fileInput').click()">📁 Load JSON file</button>
         <input type="file" id="fileInput" accept=".json" style="display:none" onchange="loadCustomQuiz(event)">
+    </div>
+
+    <div id="settings-panel" style="display:none; background:white; padding:22px; border-radius:12px; margin-bottom:25px; box-shadow:0 4px 15px rgba(0,0,0,0.1);">
+        <h3>Settings</h3>
+        <div style="margin:12px 0;">
+            <label><input type="checkbox" id="useSpoiler" checked onchange="liveUpdateSettings()"> Use spoiler for correct answers</label>
+        </div>
+        <div style="margin:12px 0;">
+            Show correct answers: 
+            <select id="answerDisplay" onchange="liveUpdateSettings()">
+                <option value="inline">Under each question</option>
+                <option value="end">Only at the end</option>
+            </select>
+        </div>
+        <button onclick="saveSettings()" style="margin-top:12px;">Save Settings</button>
     </div>
 
     <div id="quiz-list"></div>
@@ -116,9 +178,9 @@
 
     <div id="quiz-container" style="display: none;"></div>
     
-    <div style="text-align:center; margin: 30px 0;" id="action-buttons">
-        <button onclick="submitQuiz()" class="btn-primary" id="submit-btn">Submit All Answers</button>
-        <button onclick="resubmitQuiz()" class="btn-secondary" id="retry-btn" style="display:none;">Resubmit Feedback</button>
+    <div style="text-align:center; margin: 40px 0;">
+        <button onclick="submitQuiz()" id="submit-btn" style="padding:14px 32px; font-size:17px;">Submit All Answers</button>
+        <button onclick="resubmitQuiz()" id="retry-btn" style="display:none; padding:14px 32px; font-size:17px;">Resubmit Feedback</button>
     </div>
 
     <div id="results" style="display: none;"></div>
@@ -126,15 +188,21 @@
     <!-- Footer -->
     <div class="footer">
         <div class="social-icons">
-            <a href="https://github.com/AnCarsenat/Quizzer" target="_blank" title="GitHub">🐙</a>
-            <a href="https://youtube.com" target="_blank" title="YouTube">📺</a>
-            <a href="https://discord.com" target="_blank" title="Discord">💬</a>
+            <a href="https://github.com/AnCarsenat/Quizzer" target="_blank" title="GitHub">
+                <img src="icons/github.png" alt="GitHub" width="38" height="38">
+            </a>
+            <a href="https://www.youtube.com" target="_blank" title="YouTube">
+                <img src="icons/youtube.png" alt="YouTube" width="38" height="38">
+            </a>
+            <a href="https://discord.com" target="_blank" title="Discord">
+                <img src="icons/discord.png" alt="Discord" width="38" height="38">
+            </a>
         </div>
         <p>
             <a href="https://github.com/AnCarsenat/Quizzer#readme" target="_blank">📖 Wiki / Documentation</a> |
-            <a href="https://github.com/AnCarsenat/Quizzer/issues" target="_blank">🐞 Signaler un problème</a>
+            <a href="https://github.com/AnCarsenat/Quizzer/issues" target="_blank">🐞 Report an Issue</a>
         </p>
-        <p style="font-size: 0.9em; margin-top: 10px;">Made with ❤️ for Bac 2026 • Share freely</p>
+        <p style="font-size: 0.9em; margin-top: 12px;">Made with ❤️ for your studies • Share & edit freely</p>
     </div>
 
     <script>
@@ -142,50 +210,67 @@
         let userAnswers = {};
         let currentQuizKey = 'default';
         let currentQuizTitle = '';
-        let settings = { answerDisplay: "inline", useSpoiler: true, randomize: false, darkMode: false };
+        let settings = { answerDisplay: "inline", useSpoiler: true };
         let allQuizzes = [];
 
-        function showToast(message, type = "success") {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.style.background = type === "success" ? "#28a745" : "#dc3545";
-            toast.style.display = "block";
-            setTimeout(() => toast.style.display = "none", 2800);
+        function showToast(msg, type = "success") {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.style.background = type === "success" ? "#28a745" : "#dc3545";
+            t.style.display = "block";
+            setTimeout(() => t.style.display = "none", 2600);
+        }
+
+        function toggleSettings() {
+            const p = document.getElementById('settings-panel');
+            p.style.display = p.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function liveUpdateSettings() {
+            settings.useSpoiler = document.getElementById('useSpoiler').checked;
+            settings.answerDisplay = document.getElementById('answerDisplay').value;
+        }
+
+        function saveSettings() {
+            liveUpdateSettings();
+            localStorage.setItem('quizSettings', JSON.stringify(settings));
+            showToast("Settings saved");
+        }
+
+        function loadSettings() {
+            const saved = localStorage.getItem('quizSettings');
+            if (saved) {
+                settings = JSON.parse(saved);
+                document.getElementById('useSpoiler').checked = settings.useSpoiler;
+                document.getElementById('answerDisplay').value = settings.answerDisplay || "inline";
+            }
         }
 
         function fuzzyMatch(str, query) {
             if (!str) return false;
-            const s = str.toLowerCase();
-            const q = query.toLowerCase();
+            const s = str.toLowerCase(), q = query.toLowerCase();
             let i = 0;
-            for (let char of q) {
-                if ((i = s.indexOf(char, i)) === -1) return false;
-                i++;
-            }
+            for (let c of q) if ((i = s.indexOf(c, i)) === -1) return false;
             return true;
         }
 
         async function loadAvailableQuizzes() {
-            const listEl = document.getElementById('quiz-list');
-            listEl.innerHTML = '<p>Chargement des quizzes...</p>';
-
             allQuizzes = [];
-
             const candidates = [
-                { name: "bac2026", title: "Mouvements Littéraires - Bac 2026", desc: "Quiz complet sur les grands mouvements littéraires" },
-                { name: "default", title: "Quiz par défaut" }
+                { name: "bac2026", title: "Mouvements Littéraires - Bac 2026" },
+                { name: "francais", title: "Quiz Français" },
+                { name: "default", title: "Default Quiz" }
             ];
 
             for (let q of candidates) {
-                const urls = [`./${q.name}.json`, `./quizs/${q.name}.json`];
-                for (let url of urls) {
+                for (let url of [`./${q.name}.json`, `./quizs/${q.name}.json`]) {
                     try {
-                        const res = await fetch(url);
-                        if (res.ok) {
-                            const data = await res.json();
-                            if (Array.isArray(data) && data.length > 0 && data[0].title) {
+                        const r = await fetch(url);
+                        if (r.ok) {
+                            const data = await r.json();
+                            if (Array.isArray(data) && data[0]?.title) {
                                 q.title = data[0].title;
-                                q.desc = data[0].desc || data[0].description || q.desc;
+                                q.desc = data[0].desc || data[0].description || "";
                             }
                             allQuizzes.push({ ...q, url });
                             break;
@@ -193,121 +278,92 @@
                     } catch(e) {}
                 }
             }
-
             renderQuizList(allQuizzes);
             populateSelector();
         }
 
         function renderQuizList(quizzes) {
-            const container = document.getElementById('quiz-list');
-            container.innerHTML = '';
-
+            const c = document.getElementById('quiz-list');
+            c.innerHTML = quizzes.length ? '' : '<p>Aucun quiz trouvé.</p>';
             quizzes.forEach(q => {
-                const div = document.createElement('div');
-                div.className = 'quiz-card';
-                div.innerHTML = `
-                    <strong>${q.title}</strong>
-                    ${q.desc ? `<p class="quiz-desc">${q.desc}</p>` : ''}
-                    <small>${q.name}.json</small>
-                `;
-                div.onclick = () => loadQuiz(q.name);
-                container.appendChild(div);
+                const d = document.createElement('div');
+                d.className = 'quiz-card';
+                d.innerHTML = `<strong>${q.title}</strong>${q.desc ? `<p class="quiz-desc">${q.desc}</p>` : ''}<small> (${q.name}.json)</small>`;
+                d.onclick = () => loadQuiz(q.name);
+                c.appendChild(d);
             });
         }
 
         function filterQuizzes() {
-            const query = document.getElementById('searchInput').value.trim();
-            if (!query) return renderQuizList(allQuizzes);
-            const filtered = allQuizzes.filter(q => 
-                fuzzyMatch(q.title, query) || fuzzyMatch(q.desc, query) || fuzzyMatch(q.name, query)
-            );
-            renderQuizList(filtered);
+            const q = document.getElementById('searchInput').value.trim();
+            renderQuizList(q ? allQuizzes.filter(item => fuzzyMatch(item.title, q) || fuzzyMatch(item.name, q)) : allQuizzes);
         }
 
         function populateSelector() {
-            const select = document.getElementById('quizSelector');
+            const s = document.getElementById('quizSelector');
             allQuizzes.forEach(q => {
-                const opt = document.createElement('option');
-                opt.value = q.name;
-                opt.textContent = q.title;
-                select.appendChild(opt);
+                const o = document.createElement('option');
+                o.value = q.name;
+                o.textContent = q.title;
+                s.appendChild(o);
             });
         }
 
-        async function loadQuiz(quizName) {
+        async function loadQuiz(name) {
             document.getElementById('quiz-list').style.display = 'none';
             document.getElementById('quiz-container').style.display = 'block';
-            await loadQuestions(quizName);
+            await loadQuestions(name);
         }
 
-        function loadSelectedQuiz(name) {
-            if (name) loadQuiz(name);
-        }
-
-        function getQuizFile(quizName) {
-            currentQuizKey = `quizProgress_${quizName}`;
-            return [`./${quizName}.json`, `./quizs/${quizName}.json`];
-        }
+        function loadSelectedQuiz(name) { if (name) loadQuiz(name); }
 
         async function loadQuestions(quizName = null) {
             const params = new URLSearchParams(window.location.search);
             const quiz = quizName || params.get('quiz') || 'default';
-            const urls = getQuizFile(quiz);
+            const urls = [`./${quiz}.json`, `./quizs/${quiz}.json`];
 
             for (let url of urls) {
                 try {
-                    const res = await fetch(url);
-                    if (res.ok) {
-                        let data = await res.json();
-                        
-                        // Handle new metadata structure
-                        if (Array.isArray(data) && data.length > 0 && data[0].title) {
+                    const r = await fetch(url);
+                    if (r.ok) {
+                        let data = await r.json();
+                        if (Array.isArray(data) && data[0]?.title) {
                             currentQuizTitle = data[0].title;
-                            questions = data.slice(1); // Remove metadata object
+                            questions = data.slice(1);
                         } else {
                             questions = data;
                         }
-
-                        if (settings.randomize) questions = questions.sort(() => Math.random() - 0.5);
                         loadProgress();
                         renderQuiz();
                         return;
                     }
                 } catch(e) {}
             }
-            document.getElementById('error').innerHTML = `Impossible de charger le quiz <strong>${quiz}</strong>`;
+            document.getElementById('error').innerHTML = `Could not load <strong>${quiz}</strong>.json`;
         }
 
         function loadCustomQuiz(e) {
-            const file = e.target.files[0];
-            if (!file) return;
+            const f = e.target.files[0];
+            if (!f) return;
             const reader = new FileReader();
-            reader.onload = function(ev) {
+            reader.onload = ev => {
                 try {
                     let data = JSON.parse(ev.target.result);
-                    if (Array.isArray(data) && data.length > 0 && data[0].title) {
+                    if (Array.isArray(data) && data[0]?.title) {
                         currentQuizTitle = data[0].title;
                         questions = data.slice(1);
-                    } else {
-                        questions = data;
-                    }
+                    } else questions = data;
                     currentQuizKey = 'custom_' + Date.now();
                     loadProgress();
                     renderQuiz();
                     document.getElementById('quiz-list').style.display = 'none';
                     document.getElementById('quiz-container').style.display = 'block';
-                    showToast("Quiz personnalisé chargé avec succès");
+                    showToast("Custom quiz loaded");
                 } catch(err) {
-                    showToast("Fichier JSON invalide", "error");
+                    showToast("Invalid JSON file", "error");
                 }
             };
-            reader.readAsText(file);
-        }
-
-        // ==================== Core Quiz Functions ====================
-        function loadSettings() {
-            const saved = localStorage.getItem('quizSettings');
-            if (saved) settings = JSON.parse(saved);
+            reader.readAsText(f);
         }
 
         function loadProgress() {
@@ -323,53 +379,49 @@
             const container = document.getElementById('quiz-container');
             container.innerHTML = currentQuizTitle ? `<h2>${currentQuizTitle}</h2>` : '';
 
-            questions.forEach((q, index) => {
+            questions.forEach((q, i) => {
                 const qDiv = document.createElement('div');
                 qDiv.className = 'question';
-                qDiv.id = `q-${index}`;
-                qDiv.innerHTML = `<h3>Question ${index + 1}: ${q.question}</h3>`;
+                qDiv.id = `q-${i}`;
+                qDiv.innerHTML = `<h3>Question ${i+1}: ${q.question}</h3>`;
 
                 if (q.type === 'multiple-choice') {
                     q.options.forEach(opt => {
-                        const checked = userAnswers[index] === opt ? 'checked' : '';
-                        qDiv.innerHTML += `<label><input type="radio" name="q${index}" value="${opt}" ${checked} onchange="saveAnswer(${index}, this.value)"> ${opt}</label><br>`;
+                        const checked = userAnswers[i] === opt ? 'checked' : '';
+                        qDiv.innerHTML += `<label><input type="radio" name="q${i}" value="${opt}" ${checked} onchange="saveAnswer(${i}, this.value)"> ${opt}</label><br>`;
                     });
                 } else if (q.type === 'checkbox') {
                     q.options.forEach(opt => {
-                        const checked = (userAnswers[index] || []).includes(opt) ? 'checked' : '';
-                        qDiv.innerHTML += `<label><input type="checkbox" name="q${index}" value="${opt}" ${checked} onchange="saveCheckboxAnswer(${index})"> ${opt}</label><br>`;
+                        const checked = (userAnswers[i] || []).includes(opt) ? 'checked' : '';
+                        qDiv.innerHTML += `<label><input type="checkbox" name="q${i}" value="${opt}" ${checked} onchange="saveCheckboxAnswer(${i})"> ${opt}</label><br>`;
                     });
                 } else if (q.type === 'text' || q.type === 'number') {
                     const type = q.type === 'number' ? 'number' : 'text';
-                    const value = userAnswers[index] || '';
-                    qDiv.innerHTML += `<input type="${type}" id="input-${index}" value="${value}" placeholder="Votre réponse" onblur="saveAnswer(${index}, this.value)">`;
+                    qDiv.innerHTML += `<input type="${type}" id="input-${i}" value="${userAnswers[i]||''}" placeholder="Votre réponse" onblur="saveAnswer(${i}, this.value)">`;
                 } else if (q.type === 'select') {
-                    let html = `<select onchange="saveAnswer(${index}, this.value)"><option value="">Choisir...</option>`;
-                    q.options.forEach(opt => {
-                        const selected = userAnswers[index] === opt ? 'selected' : '';
-                        html += `<option value="${opt}" ${selected}>${opt}</option>`;
-                    });
+                    let html = `<select onchange="saveAnswer(${i}, this.value)"><option value="">Choisir...</option>`;
+                    q.options.forEach(opt => html += `<option value="${opt}" ${userAnswers[i]===opt?'selected':''}>${opt}</option>`);
                     html += '</select>';
                     qDiv.innerHTML += html;
                 }
 
-                const feedbackDiv = document.createElement('div');
-                feedbackDiv.id = `feedback-${index}`;
-                qDiv.appendChild(feedbackDiv);
+                const fb = document.createElement('div');
+                fb.id = `feedback-${i}`;
+                qDiv.appendChild(fb);
                 container.appendChild(qDiv);
             });
         }
 
-        function saveAnswer(index, value) { userAnswers[index] = value; saveProgress(); }
-        function saveCheckboxAnswer(index) {
-            userAnswers[index] = Array.from(document.querySelectorAll(`input[name="q${index}"]:checked`)).map(cb => cb.value);
+        function saveAnswer(i, v) { userAnswers[i] = v; saveProgress(); }
+        function saveCheckboxAnswer(i) {
+            userAnswers[i] = Array.from(document.querySelectorAll(`input[name="q${i}"]:checked`)).map(c => c.value);
             saveProgress();
         }
 
         function getCorrectDisplay(q) {
             if (Array.isArray(q.correctAnswer)) return q.correctAnswer.join(', ');
             if (q.acceptableAnswers?.length) return q.acceptableAnswers.join(' / ');
-            return q.correctAnswer !== undefined ? q.correctAnswer : '—';
+            return q.correctAnswer ?? '—';
         }
 
         function submitQuiz() {
@@ -378,46 +430,44 @@
             showFeedback();
         }
 
-        function resubmitQuiz() {
-            showFeedback();
-        }
+        function resubmitQuiz() { showFeedback(); }
 
         function showFeedback() {
             let score = 0;
             questions.forEach((q, i) => {
-                const userAns = userAnswers[i];
-                let isCorrect = false;
+                const ans = userAnswers[i];
+                let correct = false;
 
                 if (q.type === 'text') {
-                    const userText = String(userAns || '').trim().toLowerCase();
-                    isCorrect = q.acceptableAnswers?.some(a => String(a).trim().toLowerCase() === userText) || false;
+                    const u = String(ans || '').trim().toLowerCase();
+                    correct = q.acceptableAnswers?.some(a => String(a).trim().toLowerCase() === u) || false;
                 } else if (q.type === 'number') {
-                    isCorrect = parseFloat(userAns) === parseFloat(q.correctAnswer);
+                    correct = parseFloat(ans) === parseFloat(q.correctAnswer);
                 } else if (q.type === 'checkbox') {
-                    isCorrect = JSON.stringify((userAns || []).sort()) === JSON.stringify((q.correctAnswer || []).sort());
+                    correct = JSON.stringify((ans||[]).sort()) === JSON.stringify((q.correctAnswer||[]).sort());
                 } else {
-                    isCorrect = String(userAns) === String(q.correctAnswer);
+                    correct = String(ans) === String(q.correctAnswer);
                 }
 
-                if (isCorrect) score++;
+                if (correct) score++;
 
-                const feedbackDiv = document.getElementById(`feedback-${i}`);
-                let html = `<div class="feedback ${isCorrect ? 'correct' : 'incorrect'}">
-                    <strong>${isCorrect ? '✅ Correct !' : '❌ Incorrect'}</strong><br>`;
+                const fbDiv = document.getElementById(`feedback-${i}`);
+                let html = `<div class="feedback ${correct ? 'correct' : 'incorrect'}">
+                    <strong>${correct ? '✅ Correct !' : '❌ Incorrect'}</strong><br>`;
 
-                if (!isCorrect && settings.answerDisplay === "inline") {
-                    const correctText = getCorrectDisplay(q);
+                if (!correct && settings.answerDisplay === "inline") {
+                    const txt = getCorrectDisplay(q);
                     if (settings.useSpoiler) {
-                        html += `Réponse attendue : <span class="spoiler" onclick="this.style.background='white'; this.innerHTML='${correctText}'">Cliquer pour révéler</span>`;
+                        html += `Réponse : <span class="spoiler" onclick="this.style.background='white';this.innerHTML='${txt}'">Cliquer pour révéler</span>`;
                     } else {
-                        html += `Réponse attendue : <strong>${correctText}</strong>`;
+                        html += `Réponse : <strong>${txt}</strong>`;
                     }
                 }
-                html += `</div>`;
-                feedbackDiv.innerHTML = html;
+                fbDiv.innerHTML = html + '</div>';
             });
 
-            document.getElementById('results').innerHTML = `<h2>Score final : ${score} / ${questions.length}</h2>`;
+            const percentage = Math.round((score / questions.length) * 100);
+            document.getElementById('results').innerHTML = `<h2>Score final : ${score} / ${questions.length} (${percentage}%)</h2>`;
             document.getElementById('results').style.display = 'block';
         }
 
