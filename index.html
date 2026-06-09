@@ -1,42 +1,84 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Quiz</title>
+    <title>Bac Français 2026 - Quiz</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 820px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 20px;
             background: #f8f9fa;
         }
-        h1 { text-align: center; margin-bottom: 30px; color: #333; }
-        .card, .question {
+        h1 { text-align: center; margin-bottom: 8px; color: #333; }
+        .subtitle { text-align: center; color: #666; margin-bottom: 25px; }
+
+        .header-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        #searchInput {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            flex: 1;
+            min-width: 280px;
+        }
+        select, button {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .quiz-card {
+            padding: 18px;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .quiz-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+        }
+        .quiz-desc { color: #555; font-size: 0.95em; margin-top: 6px; }
+
+        .footer {
+            margin-top: 60px;
+            padding: 25px;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #ddd;
+        }
+        .social-icons a {
+            font-size: 30px;
+            margin: 0 15px;
+            color: #555;
+            text-decoration: none;
+        }
+        .toast {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            padding: 14px 22px;
+            border-radius: 8px;
+            color: white;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .question {
             background: white;
             padding: 22px;
             margin-bottom: 20px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-        button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        .btn-primary { background: #28a745; color: white; }
-        .btn-secondary { background: #6c757d; color: white; }
-        .btn-toggle { background: #17a2b8; color: white; padding: 10px 18px; }
-
-        input[type="text"], input[type="number"], select {
-            padding: 12px;
-            width: 100%;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
         }
         .feedback {
             margin-top: 12px;
@@ -53,145 +95,187 @@
             cursor: pointer;
             display: inline-block;
         }
-        #error, #toast { 
-            padding: 12px; 
-            border-radius: 8px; 
-            margin: 10px 0; 
-        }
-        #toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #333;
-            color: white;
-            display: none;
-            z-index: 1000;
-        }
-        .setting-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 14px 0;
-            border-bottom: 1px solid #eee;
-        }
     </style>
 </head>
 <body>
-    <h1>Interactive Quiz</h1>
+    <h1>Bac Français 2026</h1>
+    <p class="subtitle">Quiz interactifs pour préparer le bac</p>
 
-    <div style="margin-bottom: 15px;">
-        <button class="btn-toggle" onclick="toggleSettings()">⚙️ Settings</button>
-        <button onclick="document.getElementById('fileInput').click()">📁 Load Custom Quiz</button>
+    <div class="header-controls">
+        <input type="text" id="searchInput" placeholder="🔍 Rechercher un quiz..." onkeyup="filterQuizzes()">
+        <select id="quizSelector" onchange="loadSelectedQuiz(this.value)">
+            <option value="">— Choisir un quiz —</option>
+        </select>
+        <button onclick="document.getElementById('fileInput').click()">📁 Charger un fichier JSON</button>
         <input type="file" id="fileInput" accept=".json" style="display:none" onchange="loadCustomQuiz(event)">
     </div>
 
-    <div id="settings-panel" class="card" style="display: none;">
-        <h3>Quiz Settings</h3>
-        <div class="setting-row">
-            <span class="setting-name">Show correct answers</span>
-            <select id="answerDisplay" onchange="liveUpdateSettings()">
-                <option value="inline">Under each question</option>
-                <option value="end">Only at the end</option>
-            </select>
-        </div>
-        <div class="setting-row">
-            <span class="setting-name">Use spoiler for answers</span>
-            <input type="checkbox" id="useSpoiler" onchange="liveUpdateSettings()">
-        </div>
-        <div class="setting-row">
-            <span class="setting-name">Randomize questions</span>
-            <input type="checkbox" id="randomize" onchange="liveUpdateSettings()">
-        </div>
-        <div class="setting-row">
-            <span class="setting-name">Dark mode</span>
-            <input type="checkbox" id="darkMode" onchange="liveUpdateSettings()">
-        </div>
-        <button onclick="saveSettings()" class="btn-secondary" style="margin-top: 15px;">Save Settings</button>
-    </div>
-
+    <div id="quiz-list"></div>
     <div id="error"></div>
-    <div id="toast"></div>
-    <div id="quiz-container"></div>
+    <div id="toast" class="toast"></div>
+
+    <div id="quiz-container" style="display: none;"></div>
     
-    <div style="text-align:center; margin: 25px 0;">
+    <div style="text-align:center; margin: 30px 0;" id="action-buttons">
         <button onclick="submitQuiz()" class="btn-primary" id="submit-btn">Submit All Answers</button>
-        <button onclick="resubmitQuiz()" class="btn-secondary" id="retry-btn" style="display:none;">Resubmit / Show Feedback Again</button>
+        <button onclick="resubmitQuiz()" class="btn-secondary" id="retry-btn" style="display:none;">Resubmit Feedback</button>
     </div>
 
     <div id="results" style="display: none;"></div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="social-icons">
+            <a href="https://github.com/AnCarsenat/Quizzer" target="_blank" title="GitHub">🐙</a>
+            <a href="https://youtube.com" target="_blank" title="YouTube">📺</a>
+            <a href="https://discord.com" target="_blank" title="Discord">💬</a>
+        </div>
+        <p>
+            <a href="https://github.com/AnCarsenat/Quizzer#readme" target="_blank">📖 Wiki / Documentation</a> |
+            <a href="https://github.com/AnCarsenat/Quizzer/issues" target="_blank">🐞 Signaler un problème</a>
+        </p>
+        <p style="font-size: 0.9em; margin-top: 10px;">Made with ❤️ for Bac 2026 • Share freely</p>
+    </div>
 
     <script>
         let questions = [];
         let userAnswers = {};
         let currentQuizKey = 'default';
+        let currentQuizTitle = '';
         let settings = { answerDisplay: "inline", useSpoiler: true, randomize: false, darkMode: false };
+        let allQuizzes = [];
 
         function showToast(message, type = "success") {
             const toast = document.getElementById('toast');
             toast.textContent = message;
             toast.style.background = type === "success" ? "#28a745" : "#dc3545";
             toast.style.display = "block";
-            setTimeout(() => toast.style.display = "none", 2500);
+            setTimeout(() => toast.style.display = "none", 2800);
         }
 
-        function toggleSettings() {
-            const panel = document.getElementById('settings-panel');
-            panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+        function fuzzyMatch(str, query) {
+            if (!str) return false;
+            const s = str.toLowerCase();
+            const q = query.toLowerCase();
+            let i = 0;
+            for (let char of q) {
+                if ((i = s.indexOf(char, i)) === -1) return false;
+                i++;
+            }
+            return true;
         }
 
-        function loadSettings() {
-            const saved = localStorage.getItem('quizSettings');
-            if (saved) settings = JSON.parse(saved);
-            document.getElementById('answerDisplay').value = settings.answerDisplay;
-            document.getElementById('useSpoiler').checked = settings.useSpoiler;
-            document.getElementById('randomize').checked = settings.randomize;
-            document.getElementById('darkMode').checked = settings.darkMode;
+        async function loadAvailableQuizzes() {
+            const listEl = document.getElementById('quiz-list');
+            listEl.innerHTML = '<p>Chargement des quizzes...</p>';
+
+            allQuizzes = [];
+
+            const candidates = [
+                { name: "bac2026", title: "Mouvements Littéraires - Bac 2026", desc: "Quiz complet sur les grands mouvements littéraires" },
+                { name: "default", title: "Quiz par défaut" }
+            ];
+
+            for (let q of candidates) {
+                const urls = [`./${q.name}.json`, `./quizs/${q.name}.json`];
+                for (let url of urls) {
+                    try {
+                        const res = await fetch(url);
+                        if (res.ok) {
+                            const data = await res.json();
+                            if (Array.isArray(data) && data.length > 0 && data[0].title) {
+                                q.title = data[0].title;
+                                q.desc = data[0].desc || data[0].description || q.desc;
+                            }
+                            allQuizzes.push({ ...q, url });
+                            break;
+                        }
+                    } catch(e) {}
+                }
+            }
+
+            renderQuizList(allQuizzes);
+            populateSelector();
         }
 
-        function liveUpdateSettings() {
-            settings.answerDisplay = document.getElementById('answerDisplay').value;
-            settings.useSpoiler = document.getElementById('useSpoiler').checked;
-            settings.randomize = document.getElementById('randomize').checked;
-            settings.darkMode = document.getElementById('darkMode').checked;
+        function renderQuizList(quizzes) {
+            const container = document.getElementById('quiz-list');
+            container.innerHTML = '';
+
+            quizzes.forEach(q => {
+                const div = document.createElement('div');
+                div.className = 'quiz-card';
+                div.innerHTML = `
+                    <strong>${q.title}</strong>
+                    ${q.desc ? `<p class="quiz-desc">${q.desc}</p>` : ''}
+                    <small>${q.name}.json</small>
+                `;
+                div.onclick = () => loadQuiz(q.name);
+                container.appendChild(div);
+            });
         }
 
-        function saveSettings() {
-            liveUpdateSettings();
-            localStorage.setItem('quizSettings', JSON.stringify(settings));
-            showToast("Settings saved successfully");
+        function filterQuizzes() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query) return renderQuizList(allQuizzes);
+            const filtered = allQuizzes.filter(q => 
+                fuzzyMatch(q.title, query) || fuzzyMatch(q.desc, query) || fuzzyMatch(q.name, query)
+            );
+            renderQuizList(filtered);
+        }
+
+        function populateSelector() {
+            const select = document.getElementById('quizSelector');
+            allQuizzes.forEach(q => {
+                const opt = document.createElement('option');
+                opt.value = q.name;
+                opt.textContent = q.title;
+                select.appendChild(opt);
+            });
+        }
+
+        async function loadQuiz(quizName) {
+            document.getElementById('quiz-list').style.display = 'none';
+            document.getElementById('quiz-container').style.display = 'block';
+            await loadQuestions(quizName);
+        }
+
+        function loadSelectedQuiz(name) {
+            if (name) loadQuiz(name);
         }
 
         function getQuizFile(quizName) {
             currentQuizKey = `quizProgress_${quizName}`;
-            // Try both locations
             return [`./${quizName}.json`, `./quizs/${quizName}.json`];
-        }
-
-        async function tryLoadQuiz(urls) {
-            for (let url of urls) {
-                try {
-                    const res = await fetch(url);
-                    if (res.ok) return await res.json();
-                } catch(e) {}
-            }
-            return null;
         }
 
         async function loadQuestions(quizName = null) {
             const params = new URLSearchParams(window.location.search);
             const quiz = quizName || params.get('quiz') || 'default';
-
             const urls = getQuizFile(quiz);
-            questions = await tryLoadQuiz(urls);
 
-            if (!questions) {
-                document.getElementById('error').innerHTML = `Could not load quiz <strong>${quiz}</strong>`;
-                return;
+            for (let url of urls) {
+                try {
+                    const res = await fetch(url);
+                    if (res.ok) {
+                        let data = await res.json();
+                        
+                        // Handle new metadata structure
+                        if (Array.isArray(data) && data.length > 0 && data[0].title) {
+                            currentQuizTitle = data[0].title;
+                            questions = data.slice(1); // Remove metadata object
+                        } else {
+                            questions = data;
+                        }
+
+                        if (settings.randomize) questions = questions.sort(() => Math.random() - 0.5);
+                        loadProgress();
+                        renderQuiz();
+                        return;
+                    }
+                } catch(e) {}
             }
-
-            if (settings.randomize) questions = questions.sort(() => Math.random() - 0.5);
-            loadProgress();
-            renderQuiz();
+            document.getElementById('error').innerHTML = `Impossible de charger le quiz <strong>${quiz}</strong>`;
         }
 
         function loadCustomQuiz(e) {
@@ -200,16 +284,30 @@
             const reader = new FileReader();
             reader.onload = function(ev) {
                 try {
-                    questions = JSON.parse(ev.target.result);
-                    currentQuizKey = 'custom_quiz';
+                    let data = JSON.parse(ev.target.result);
+                    if (Array.isArray(data) && data.length > 0 && data[0].title) {
+                        currentQuizTitle = data[0].title;
+                        questions = data.slice(1);
+                    } else {
+                        questions = data;
+                    }
+                    currentQuizKey = 'custom_' + Date.now();
                     loadProgress();
                     renderQuiz();
-                    showToast("Custom quiz loaded successfully");
+                    document.getElementById('quiz-list').style.display = 'none';
+                    document.getElementById('quiz-container').style.display = 'block';
+                    showToast("Quiz personnalisé chargé avec succès");
                 } catch(err) {
-                    showToast("Invalid JSON file", "error");
+                    showToast("Fichier JSON invalide", "error");
                 }
             };
             reader.readAsText(file);
+        }
+
+        // ==================== Core Quiz Functions ====================
+        function loadSettings() {
+            const saved = localStorage.getItem('quizSettings');
+            if (saved) settings = JSON.parse(saved);
         }
 
         function loadProgress() {
@@ -223,7 +321,7 @@
 
         function renderQuiz() {
             const container = document.getElementById('quiz-container');
-            container.innerHTML = '';
+            container.innerHTML = currentQuizTitle ? `<h2>${currentQuizTitle}</h2>` : '';
 
             questions.forEach((q, index) => {
                 const qDiv = document.createElement('div');
@@ -231,7 +329,6 @@
                 qDiv.id = `q-${index}`;
                 qDiv.innerHTML = `<h3>Question ${index + 1}: ${q.question}</h3>`;
 
-                // ... (same input rendering as before with pre-filled values)
                 if (q.type === 'multiple-choice') {
                     q.options.forEach(opt => {
                         const checked = userAnswers[index] === opt ? 'checked' : '';
@@ -245,9 +342,9 @@
                 } else if (q.type === 'text' || q.type === 'number') {
                     const type = q.type === 'number' ? 'number' : 'text';
                     const value = userAnswers[index] || '';
-                    qDiv.innerHTML += `<input type="${type}" id="input-${index}" value="${value}" placeholder="Your answer" onblur="saveAnswer(${index}, this.value)">`;
+                    qDiv.innerHTML += `<input type="${type}" id="input-${index}" value="${value}" placeholder="Votre réponse" onblur="saveAnswer(${index}, this.value)">`;
                 } else if (q.type === 'select') {
-                    let html = `<select id="select-${index}" onchange="saveAnswer(${index}, this.value)"><option value="">Select...</option>`;
+                    let html = `<select onchange="saveAnswer(${index}, this.value)"><option value="">Choisir...</option>`;
                     q.options.forEach(opt => {
                         const selected = userAnswers[index] === opt ? 'selected' : '';
                         html += `<option value="${opt}" ${selected}>${opt}</option>`;
@@ -263,11 +360,7 @@
             });
         }
 
-        function saveAnswer(index, value) {
-            userAnswers[index] = value;
-            saveProgress();
-        }
-
+        function saveAnswer(index, value) { userAnswers[index] = value; saveProgress(); }
         function saveCheckboxAnswer(index) {
             userAnswers[index] = Array.from(document.querySelectorAll(`input[name="q${index}"]:checked`)).map(cb => cb.value);
             saveProgress();
@@ -291,7 +384,6 @@
 
         function showFeedback() {
             let score = 0;
-
             questions.forEach((q, i) => {
                 const userAns = userAnswers[i];
                 let isCorrect = false;
@@ -310,39 +402,28 @@
                 if (isCorrect) score++;
 
                 const feedbackDiv = document.getElementById(`feedback-${i}`);
-                let feedbackHTML = `<div class="feedback ${isCorrect ? 'correct' : 'incorrect'}">
-                    <strong>${isCorrect ? '✅ Correct!' : '❌ Incorrect'}</strong><br>`;
+                let html = `<div class="feedback ${isCorrect ? 'correct' : 'incorrect'}">
+                    <strong>${isCorrect ? '✅ Correct !' : '❌ Incorrect'}</strong><br>`;
 
                 if (!isCorrect && settings.answerDisplay === "inline") {
                     const correctText = getCorrectDisplay(q);
                     if (settings.useSpoiler) {
-                        feedbackHTML += `Correct answer: <span class="spoiler" onclick="this.style.background='white'; this.innerHTML='${correctText}'">Click to reveal</span>`;
+                        html += `Réponse attendue : <span class="spoiler" onclick="this.style.background='white'; this.innerHTML='${correctText}'">Cliquer pour révéler</span>`;
                     } else {
-                        feedbackHTML += `Correct answer: <strong>${correctText}</strong>`;
+                        html += `Réponse attendue : <strong>${correctText}</strong>`;
                     }
                 }
-                feedbackHTML += `</div>`;
-
-                if (settings.answerDisplay === "inline") {
-                    feedbackDiv.innerHTML = feedbackHTML;
-                }
+                html += `</div>`;
+                feedbackDiv.innerHTML = html;
             });
 
-            document.getElementById('results').innerHTML = `<h2>Your Score: ${score} / ${questions.length}</h2>`;
+            document.getElementById('results').innerHTML = `<h2>Score final : ${score} / ${questions.length}</h2>`;
             document.getElementById('results').style.display = 'block';
-        }
-
-        function resetQuiz() {
-            if (confirm("Clear all answers and progress?")) {
-                localStorage.removeItem(currentQuizKey);
-                userAnswers = {};
-                renderQuiz();
-            }
         }
 
         window.onload = () => {
             loadSettings();
-            loadQuestions();
+            loadAvailableQuizzes();
         };
     </script>
 </body>

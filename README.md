@@ -51,7 +51,8 @@ Then open: http://localhost:8000/index.html
 
 Click **"📁 Load Custom Quiz"** and select any `.json` file.
 
-## Questions JSON Format
+## Making your own quizz
+### Questions JSON Format
 
 Each question must follow this structure:
 
@@ -65,9 +66,41 @@ Each question must follow this structure:
 }
 ```
 
+### Support for Quiz Metadata
+
+You can now add optional fields at the root of your JSON:
+
+```json
+{
+  "title": "Mouvements Littéraires - Bac 2026",
+  "desc": "Quiz complet couvrant le Classicisme, Romantisme, Réalisme, Symbolisme...",
+}
+```
+
 ### Full Example (bac2026.json)
 
 See the file you already have — it contains a complete Bac de Français 2026 preparation quiz on literary movements.
+
+Extracted sample :
+```json
+[
+  {
+  "title": "Mouvements Littéraires - Bac 2026",
+  "desc": "Quiz complet couvrant le Classicisme, Romantisme, Réalisme, Symbolisme...",
+  },
+  {
+    "question": "Quel mouvement littéraire est principalement associé à la glorification de la raison, de l'ordre et de la règle classique au XVIIe siècle ?",
+    "type": "select",
+    "options": ["Humanisme", "Classicism", "Romantisme", "Lumières"],
+    "correctAnswer": "Classicism"
+  },
+  {
+    "question": "Qui est considéré comme le théoricien principal du Classicisme avec son Art poétique ?",
+    "type": "text",
+    "acceptableAnswers": ["Boileau", "Nicolas Boileau"]
+  }
+]
+```
 
 ## Supported Question Types
 
