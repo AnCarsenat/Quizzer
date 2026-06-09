@@ -132,6 +132,9 @@ Extracted sample :
 - Question explanations field
 - Score history
 - Print mode
+- Allow users to make their own quizzes and upload them to the archives
+- Allow for embedded adding images
+- Allow for embedded markdown
 
 ---
 
