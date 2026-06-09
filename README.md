@@ -1,10 +1,3 @@
-**✅ Updated `README.md`**
-
-Here is the complete, clean and professional documentation for your project:
-
----
-
-```markdown
 # Interactive Quiz Platform
 
 A modern, flexible, and user-friendly quiz web application designed for Bac de Français preparation (and general use).
